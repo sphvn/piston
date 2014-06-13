@@ -1,0 +1,27 @@
+{
+  "name": "ripsnorter",
+  "version": "0.0.1",
+  "description": "Serial decoder",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "connect": "~2.16.2",
+    "serialport": "~1.4.0",
+    "quickcheck": "~0.0.4",
+    "ws": "~0.4.31"
+  },
+  "devDependencies": {
+    "mocha": "~1.19.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://lavabeams@bitbucket.org/lavabeams/ripsnorter.git"
+  },
+  "author": "Stephen Underwood <undersj@gmail.com>",
+  "license": "copyright"
+}
