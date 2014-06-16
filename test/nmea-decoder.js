@@ -3,33 +3,33 @@
   var server;
   server = require("../main.js");
   server.setDecoder("nmea");
-  describe('the decoder unchunker', function(test){
+  describe('the nmea.receive', function(_){
     it('should return the message when the chunk is the message', function(done){
       var expected, given, result;
+      server.decoder.flush();
       expected = "$HEHDT,289.97,T*12";
       given = expected + "\r";
-      server.decoder.flush();
       result = server.decoder.receive(given);
       result.should.equal(expected);
       return done();
     });
     it('should return the message when the chunk contains the message', function(done){
       var expected, given, result;
+      server.decoder.flush();
       expected = "$HEHDT,289.97,T*12";
       given = ",T*12\r" + expected + "\r$HEHDT,2";
-      server.decoder.flush();
       result = server.decoder.receive(given);
       result.should.equal(expected);
       return done();
     });
     it('should return the message from multiple chunks', function(done){
       var expected, msg1, msg2, msg3, msg4, result;
+      server.decoder.flush();
       expected = "$HEHDT,289.97,T*12";
       msg1 = ",T*12\r";
       msg2 = "$HEHDT,289";
       msg3 = ".97,T*12";
       msg4 = "\r$HEHDT,2";
-      server.decoder.flush();
       result = server.decoder.receive(msg1);
       result = server.decoder.receive(msg2);
       result = server.decoder.receive(msg3);
@@ -65,6 +65,30 @@
       server.decoder.flush();
       expected = null;
       result = server.decoder.receive(expected);
+      (result === null).should.be['true'];
+      return done();
+    });
+  });
+  describe('the nmea.decode', function(_){
+    it('should return the decoded object', function(done){
+      var given, obj, expected, result;
+      given = "$HEHDT,289.97,T*12";
+      obj = {
+        talkerId: "HEHDT",
+        heading: "289.97",
+        headingType: "T",
+        checksum: "12"
+      };
+      expected = JSON.stringify(obj);
+      result = JSON.stringify(server.decoder.decode(given));
+      result.should.equal(expected);
+      return done();
+    });
+    return it('should return null if checksum is invalid', function(done){
+      var given, expected, result;
+      given = "$HEHDT,289.97,T*13";
+      expected = null;
+      result = server.decoder.decode(given);
       (result === null).should.be['true'];
       return done();
     });
