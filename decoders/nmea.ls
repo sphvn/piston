@@ -1,13 +1,25 @@
-{drop-while, take-while} = require 'prelude-ls' .Str
+{drop-while, take-while, span} = require 'prelude-ls' .Str
 
 buffer = ""
-@unchunk = (chunk) ->
-  buffer += chunk
-  buffer  := drop-while (!= "$"), buffer
-  message = take-while (!= ";"), buffer
-  if (message.length >= 1)
-    buffer := drop-while (!= ";"), buffer
-    message
+@buffer-size = buffer.length
+@flush = -> buffer := ""
+
+@receive = (chunk) ->
+  flush! if @buffer-size > 16000
+
+  [buf, msg] = unpack buffer, chunk
+  buffer := buf
+  msg
+
+unpack = (buf, chunk) ->
+  _buf = drop-while (!= "$"), buf + chunk
+  return [_buf, null] if (_buf.index-of "\r") == -1
+  
+  [msg, _buf] = span (!= "\r"), _buf
+  switch
+  | msg[0] == "$" => [_buf, msg]
+  | otherwise     => [_buf, null]
+
 
 @decode = (msg) ->
   msg
