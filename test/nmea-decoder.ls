@@ -1,4 +1,5 @@
 server = require "../main.js"
+moment = require "moment"
 server.set-decoder "nmea"
 
 describe 'the nmea.receive', (_) ->
@@ -61,13 +62,32 @@ describe 'the nmea.receive', (_) ->
     done!
 
 describe 'the nmea.decode', (_) ->
-  it 'should return the decoded object', (done) ->
+  it 'should return the decoded HDT', (done) ->
     given = "$HEHDT,289.97,T*12"
     obj = {
-      talkerId    : "HEHDT"
-      heading     : "289.97"
-      headingType : "T"
-      checksum    : "12"
+      talker       : "HE"
+      sentence     : "HDT"
+      heading      : 289.97
+      heading-type : "T"
+    }
+    expected = JSON.stringify obj
+    result = JSON.stringify (server.decoder.decode given)
+    result.should.equal expected
+    #obj.should.equal (server.decoder.decode given)
+    done!
+
+  it 'should return the decoded GGA', (done) ->
+    given = "$GPGGA,175621.13,3254.12,S,11530.00,E,2,10,0.9,31.30,M,-33.13,M,020,1000*56"
+    obj = {
+      talker      : "GP"
+      sentence    : "GGA"
+      time        : moment.utc h: 17, m: 56, s: 21, ms: 130
+      wgs84       : lat: -32.902, lon: 115.5, elh: 31.30+(-33.13)
+      quality     : [2, "Differential"]
+      satellites  : 10
+      hdop        : 0.9
+      correction-age    : 20
+      reference-station : 1000
     }
     expected = JSON.stringify obj
     result = JSON.stringify (server.decoder.decode given)

@@ -1,0 +1,43 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  color: #eee;
+  background-color: #333;
+  padding: 1em;
+  font-family: "Consolas", sans-serif;
+  font-weight: 300;
+}
+
+h1 {
+  color: #eee;
+}
+
+.category {
+  color: #b00;
+}
+
+.status {
+  margin: 0.5em 0 0.5em 0;
+}
+
+body {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-drag: none;
+  -webkit-user-select: none;
+  user-drag: none;
+  user-select: none;
+}
+
+ul.legend {
+  list-style: none;
+  margin: 0.5em 0 0.5em 0;
+}
+
+ul.legend span.project {
+  color: #888;
+  font-size: 80%;
+}

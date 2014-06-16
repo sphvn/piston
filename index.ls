@@ -1,11 +1,11 @@
-inf = (m) ->
-  console.log m
-  $ \div.log .append "#m<br/>"
+inf = (obj) ->
+  console.log obj
+  $ \.log .append "#{JSON.stringify(obj, void, 2)}<br/>"
 
 @ws = new WebSocket "ws://localhost:8000/"
 
 ws.onmessage = (evt) ->
-  recv = evt.data
-  inf "recv: #{evt.data}"
+  obj = JSON.parse evt.data
+  inf obj
 
 ws.onclose = -> inf \closed
