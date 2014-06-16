@@ -6,12 +6,6 @@
     return $('div.log').append(m + "<br/>");
   };
   this.ws = new WebSocket("ws://localhost:8000/");
-  ws.onopen = function(){
-    var msg;
-    msg = 'connected';
-    inf("sent: " + msg);
-    return ws.send(msg);
-  };
   ws.onmessage = function(evt){
     var recv;
     recv = evt.data;
