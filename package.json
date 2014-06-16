@@ -1,27 +1,25 @@
 {
-  "name": "ripsnorter",
-  "version": "0.0.1",
-  "description": "Serial decoder",
-  "main": "index.js",
+  "name": "piston",
+  "version": "0.0.0",
+  "main": "main.js",
   "directories": {
     "test": "test"
   },
   "dependencies": {
-    "connect": "~2.16.2",
-    "serialport": "~1.4.0",
-    "quickcheck": "~0.0.4",
-    "ws": "~0.4.31"
+    "connect": "^2.15.0",
+    "prelude-ls": "^1.1.1",
+    "serialport": "^1.4.0",
+    "ws": "^0.4.31",
+    "socket.io": "^0.9.16"
   },
-  "devDependencies": {
-    "mocha": "~1.19.0"
-  },
+  "devDependencies": {},
   "scripts": {
-    "test": "mocha"
+    "test": "node node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://lavabeams@bitbucket.org/lavabeams/ripsnorter.git"
+    "url": "https://bitbucket.org/lavabeams/piston.git"
   },
-  "author": "Stephen Underwood <undersj@gmail.com>",
-  "license": "copyright"
+  "author": "Stephen Underwood",
+  "license": "ISC"
 }
