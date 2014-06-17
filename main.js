@@ -31,11 +31,8 @@
   };
   nmea = this.setDecoder("nmea");
   ser = new prt("/dev/ttyUSB0", {
-    baudrate: 9600
-  });
-  ser.on('open', function(){
-    console.log('open');
-    ser.on('data', function(chunk){
+    baudrate: 9600,
+    dataCallback: function(chunk){
       var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
       console.log("recv: " + chunk);
       for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
@@ -54,7 +51,10 @@
         results$.push(lresult$);
       }
       return results$;
-    });
+    }
+  });
+  ser.on('open', function(){
+    console.log('open');
     return ser.write("ls\n", function(err, res){
       console.log("err: " + err);
       return console.log("res: " + res);

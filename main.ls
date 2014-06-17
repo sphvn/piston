@@ -21,17 +21,17 @@ disconnect = (c) ->
 
 nmea = @set-decoder "nmea"
 
-ser = new prt "/dev/ttyUSB0", { baudrate : 9600 }
+ser = new prt "/dev/ttyUSB0", baudrate: 9600, data-callback: (chunk) ->
+  console.log "recv: #chunk"
+  for msg in nmea.receive chunk
+    obj = piston-time: mmt.utc!, raw: msg
+    obj <<< nmea.decode msg
+    json = JSON.stringify obj
+    for c in clients
+      c.send json
+
 ser.on \open ->
   console.log \open
-  ser.on \data, (chunk) ->
-    console.log "recv: #chunk"
-    for msg in nmea.receive chunk
-      obj = piston-time: mmt.utc!, raw: msg
-      obj <<< nmea.decode msg
-      json = JSON.stringify obj
-      for c in clients
-        c.send json
   ser.write "ls\n", (err, res) ->
     console.log "err: #err"
     console.log "res: #res"
