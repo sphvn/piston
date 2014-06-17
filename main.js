@@ -4,7 +4,7 @@
   ntp = require("./ntp.js");
   mmt = require('moment');
   con = require('connect');
-  prt = require('serialport').SerialPort;
+  prt = require('serialport');
   udp = require('dgram');
   fig = require('figlet');
   srv = require('ws').Server;
@@ -30,9 +30,19 @@
     }
   };
   nmea = this.setDecoder("nmea");
-  ser = new prt("/dev/ttyUSB0", {
-    baudrate: 9600,
-    dataCallback: function(chunk){
+  prt.list(function(err, ports){
+    return ports.forEach(function(port){
+      console.log(port.comName);
+      console.log(port.pnpId);
+      return console.log(port.manufacturer);
+    });
+  });
+  ser = new prt.SerialPort("/dev/ttyUSB0", {
+    baudrate: 9600
+  }, true);
+  ser.on('open', function(){
+    console.log('open');
+    ser.on('data', function(chunk){
       var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
       console.log("recv: " + chunk);
       for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
@@ -51,10 +61,7 @@
         results$.push(lresult$);
       }
       return results$;
-    }
-  });
-  ser.on('open', function(){
-    console.log('open');
+    });
     return ser.write("ls\n", function(err, res){
       console.log("err: " + err);
       return console.log("res: " + res);
