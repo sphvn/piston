@@ -57,15 +57,6 @@
       return disconnect(ws);
     });
   });
-  console.log("localhost      : " + mmt(new Date).format('HH:mm:ss.SSS'));
-  ntp.getNetworkTime("172.23.21.255", 123, function(server, stratum, time){
-    while (server.length < 15) {
-      server += ' ';
-    }
-    if (stratum > 0) {
-      return console.log(server + ": " + mmt(time).format('HH:mm:ss.SSS') + "  stratum: " + stratum);
-    }
-  });
   con().use(con['static'](__dirname)).listen(8080);
   function import$(obj, src){
     var own = {}.hasOwnProperty;

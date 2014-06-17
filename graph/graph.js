@@ -69,7 +69,7 @@
         };
       }
     };
-    chart.streamTo(document.getElementById('chart'), 100);
+    chart.streamTo(document.getElementById('chart'), 1000);
     setAutoRange(chart);
     (function(){
       var canvas, ups, downs, mouseDown, mousePosition, dragging, zoomOutFactor, zoomInFactor, zoomOutLocation, doZoom;

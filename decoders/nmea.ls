@@ -1,6 +1,8 @@
 {drop-while, take-while, span} = require 'prelude-ls' .Str
-{drop, floor} = require 'prelude-ls'
+{drop, floor, split-at} = require 'prelude-ls'
 moment = require 'moment'
+
+{puts} = require 'util'
 
 length = (.length)
 exspan = (c, xs) ->
@@ -12,7 +14,7 @@ buffer = ""
 @flush = -> buffer := ""
 
 @receive = (chunk) ->
-  @flush! if @buffer-size! > 16000
+  @flush! if @buffer-size! >= 16000
   msgs = []
   loop
     [buf, msg] = unpack buffer, chunk
@@ -35,10 +37,10 @@ unpack = (buf, chunk) ->
   _msg = drop 1 msg
   [_msg, checksum] = exspan '*' _msg
   return null if invalid checksum, _msg
-  [prefix,    _msg]     = exspan ',' _msg
-  talker   = prefix.substr(0, 2)
-  sentence = prefix.substr(2)
-  parts    = _msg.split(",")
+  [prefix, _msg] = exspan ',' _msg
+  talker         = prefix.substr(0, 2)
+  sentence       = prefix.substr(2)
+  parts          = _msg.split(",")
 
   decode = decoders[sentence.to-upper-case!]
   { talker, sentence } <<< decode?.apply(this, parts)
@@ -78,6 +80,43 @@ decoders =
     hdop: parse-float hdop
     correction-age: parse-int age
     reference-station: parse-int refid
+
+  GST: (time, rms, smaj-sd, smin-sd, ori, lat-sd, lon-sd, elh-sd) ->
+    time: moment.utc time, "HHmmss.SS"
+    rms: parse-float rms
+    standard-deviation:
+      semi-major: parse-float smaj-sd
+      semi-minor: parse-float smin-sd
+      lat: parse-float lat-sd
+      lon: parse-float lon-sd
+      elh: parse-float elh-sd
+    orientation: parse-float ori
+
+  ZDA: (time, day, month, year, tz-h, tz-m) ->
+    timedate = "#{year}-#{month}-#{day} #time"
+    time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
+    timezone:
+      hours: parse-int tz-h
+      minutes: parse-int tz-m
+
+  GSV: (n, i, t, ...sats) ->
+    ss = multi-split 4, sats
+    total-parts : parse-int n
+    part-id     : parse-int i
+    total-sats  : parse-int t
+    sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
+                                      , azimuth   : (parse-int s.2)
+                                      , snr       : (parse-int s.3) }] for s in ss }
+
+
+
+multi-split = (n, xs) ->
+  go = (acc, xs) ->
+    | xs.length == 0 => acc
+    | _              =>
+        [ys, zs] = split-at n, xs
+        go (acc ++ [ys]), zs
+  go [], xs
 
 vtg-mode = (m) -> switch m
   | \A => "Autonomous"

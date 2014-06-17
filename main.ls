@@ -18,6 +18,9 @@ disconnect = (c) ->
 
 nmea = @set-decoder "nmea"
 
+#    sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
+#                                      , azimuth   : (parse-int s.2), noise: (parse-int s.3) }] for s in ss }
+
 #ser = new prt "/dev/tty.usbmodem1d11", { baudrate : 9600 }, false
 #ser.on \data (chunk) ->
 ser = new udp.create-socket \udp4
@@ -38,12 +41,12 @@ wss.on \connection (ws) ->
   ws.on \close -> disconnect ws
   ws.on \error -> disconnect ws
 
-console.log "localhost      : #{mmt(new Date).format 'HH:mm:ss.SSS'}"
-ntp.get-network-time "172.23.21.255", 123, (server, stratum, time) ->
-  while server.length < 15
-    server += ' '
-  if stratum > 0
-    console.log "#server: #{(mmt time).format 'HH:mm:ss.SSS'}  stratum: #stratum"
+# console.log "localhost      : #{mmt(new Date).format 'HH:mm:ss.SSS'}"
+# ntp.get-network-time "172.23.21.255", 123, (server, stratum, time) ->
+#   while server.length < 15
+#     server += ' '
+#   if stratum > 0
+#     console.log "#server: #{(mmt time).format 'HH:mm:ss.SSS'}  stratum: #stratum"
 
 
 con!use (con.static __dirname) .listen 8080

@@ -10,10 +10,12 @@
     "moment": "^2.7.0",
     "prelude-ls": "^1.1.1",
     "serialport": "^1.4.0",
-    "ws": "^0.4.31",
-    "socket.io": "^0.9.16"
+    "ws": "^0.4.31"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "chai": "*",
+    "mocha": "*"
+  },
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha"
   },
@@ -22,5 +24,6 @@
     "url": "https://bitbucket.org/lavabeams/piston.git"
   },
   "author": "Stephen Underwood",
-  "license": "ISC"
+  "license": "ISC",
+  "description": "* Piston\r * 0.0.0.0"
 }

@@ -65,7 +65,7 @@ auto-y-range = (range) ->
   else
     min: 0, max: range.max * 1.25
 
-chart.stream-to (document.get-element-by-id \chart), 100
+chart.stream-to (document.get-element-by-id \chart), 1000
 set-auto-range chart
 
 do ->
