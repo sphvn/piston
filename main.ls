@@ -25,7 +25,7 @@ ser = new prt "/dev/ttyUSB0", { baudrate : 9600 }
 ser.on \open ->
   console.log \open
   ser.on \data, (chunk) ->
-    console.log "recv: #data"
+    console.log "recv: #chunk"
     for msg in nmea.receive chunk
       obj = piston-time: mmt.utc!, raw: msg
       obj <<< nmea.decode msg

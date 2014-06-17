@@ -37,7 +37,7 @@
     console.log('open');
     return ser.on('data', function(chunk){
       var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
-      console.log("recv: " + data);
+      console.log("recv: " + chunk);
       for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
         msg = ref$[i$];
         lresult$ = [];
