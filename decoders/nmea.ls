@@ -72,7 +72,7 @@ decoders =
     wgs84:
       lat: parse-ddmm lat, lath
       lon: parse-ddmm lon, lonh
-      elh: parse-float(alt) + parse-float(gsep)
+      elh: (parse-float alt) + (parse-float gsep)
     quality:
       code: q
       desc: gnss-mode q
@@ -93,7 +93,7 @@ decoders =
     orientation: parse-float ori
 
   ZDA: (time, day, month, year, tz-h, tz-m) ->
-    timedate = "#{year}-#{month}-#{day} #time"
+    timedate = "#year-#month-#day #time"
     time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
     timezone:
       hours: parse-int tz-h
@@ -107,7 +107,6 @@ decoders =
     sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
                                       , azimuth   : (parse-int s.2)
                                       , snr       : (parse-int s.3) }] for s in ss }
-
 
 
 multi-split = (n, xs) ->

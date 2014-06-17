@@ -1,10 +1,13 @@
+ntp = require "./ntp.js"
 mmt = require \moment
 con = require \connect
 prt = require \serialport .SerialPort
 udp = require \dgram
-ntp = require \./ntp.js
+fig = require \figlet
 srv = require \ws .Server
 wss = new srv { port: 8000 }
+
+fig "Starfix:PiSTON", {font: 'Delta Corps Priest 1'}, (_, data) -> console.log data
 
 @decoder = {}
 @set-decoder = (dn) ->

@@ -8,13 +8,15 @@
   "dependencies": {
     "connect": "^2.15.0",
     "moment": "^2.7.0",
+    "figlet": "^1.0.9",
     "prelude-ls": "^1.1.1",
     "serialport": "^1.4.0",
     "ws": "^0.4.31"
   },
   "devDependencies": {
     "chai": "*",
-    "mocha": "*"
+    "mocha": "*",
+    "LiveScript": "*"
   },
   "scripts": {
     "test": "node node_modules/mocha/bin/mocha"
