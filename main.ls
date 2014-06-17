@@ -21,22 +21,31 @@ disconnect = (c) ->
 
 nmea = @set-decoder "nmea"
 
-#    sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
-#                                      , azimuth   : (parse-int s.2), noise: (parse-int s.3) }] for s in ss }
+ser = new prt "/dev/ttyUSB0", { baudrate : 9600 }
+ser.on \open ->
+  console.log \open
+  ser.on \data, (chunk) ->
+    console.log "recv: #data"
+    for msg in nmea.receive chunk
+      obj = piston-time: mmt.utc!, raw: msg
+      obj <<< nmea.decode msg
+      json = JSON.stringify obj
+      for c in clients
+        c.send json
 
-ser = new prt "/dev/ttyUSB0", { baudrate : 9600 }, true
-ser.on \data (chunk) ->
+
+# ser.on \data (chunk) ->
 # ser = new udp.create-socket \udp4
 # ser.on \message !(chunk) ->
-  for msg in nmea.receive chunk
-    obj = piston-time: mmt.utc!, raw: msg
-    obj <<< nmea.decode msg
-    json = JSON.stringify obj
-    for c in clients
-      c.send json
+#   for msg in nmea.receive chunk
+#     obj = piston-time: mmt.utc!, raw: msg
+#     obj <<< nmea.decode msg
+#     json = JSON.stringify obj
+#     for c in clients
+#       c.send json
 
-ser.on \error (msg) -> console.log "error: #msg"
-ser.bind 40001
+# ser.on \error (msg) -> console.log "error: #msg"
+#ser.bind 40001
 
 wss.on \connection (ws) ->
   clients.push ws

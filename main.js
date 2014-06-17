@@ -32,30 +32,30 @@
   nmea = this.setDecoder("nmea");
   ser = new prt("/dev/ttyUSB0", {
     baudrate: 9600
-  }, true);
-  ser.on('data', function(chunk){
-    var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
-    for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
-      msg = ref$[i$];
-      lresult$ = [];
-      obj = {
-        pistonTime: mmt.utc(),
-        raw: msg
-      };
-      import$(obj, nmea.decode(msg));
-      json = JSON.stringify(obj);
-      for (j$ = 0, len1$ = (ref1$ = clients).length; j$ < len1$; ++j$) {
-        c = ref1$[j$];
-        lresult$.push(c.send(json));
+  });
+  ser.on('open', function(){
+    console.log('open');
+    return ser.on('data', function(chunk){
+      var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
+      console.log("recv: " + data);
+      for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
+        msg = ref$[i$];
+        lresult$ = [];
+        obj = {
+          pistonTime: mmt.utc(),
+          raw: msg
+        };
+        import$(obj, nmea.decode(msg));
+        json = JSON.stringify(obj);
+        for (j$ = 0, len1$ = (ref1$ = clients).length; j$ < len1$; ++j$) {
+          c = ref1$[j$];
+          lresult$.push(c.send(json));
+        }
+        results$.push(lresult$);
       }
-      results$.push(lresult$);
-    }
-    return results$;
+      return results$;
+    });
   });
-  ser.on('error', function(msg){
-    return console.log("error: " + msg);
-  });
-  ser.bind(40001);
   wss.on('connection', function(ws){
     clients.push(ws);
     ws.on('message', function(m){
