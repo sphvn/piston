@@ -1,74 +1,71 @@
-server = require "../main.js"
+nmea   = require "../decoders/nmea.js"
 moment = require \moment
 should = require \chai .should!
 
-
-server.set-decoder "nmea"
-
 describe 'the nmea.receive', (_) ->
   it 'should return the message when the chunk is the message', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     expected = ["$HEHDT,289.97,T*12"]
     given = "#expected\r"
-    result = server.decoder.receive given
+    result = nmea.receive given
     result.should.eql expected
     done!
 
   it 'should return the message when the chunk contains the message', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     expected = ["$HEHDT,289.97,T*12"]
     given = ",T*12\r#expected\r$HEHDT,2"
-    result = server.decoder.receive given
+    result = nmea.receive given
     result.should.eql expected
     done!
 
   it 'should return the message from multiple chunks', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     expected = ["$HEHDT,289.97,T*12"];
     msg1 = ",T*12\r";
     msg2 = "$HEHDT,289";
     msg3 = ".97,T*12";
     msg4 = "\r$HEHDT,2";
-    result = server.decoder.receive msg1
-    result = server.decoder.receive msg2
-    result = server.decoder.receive msg3
-    result = server.decoder.receive msg4
+    result = nmea.receive msg1
+    result = nmea.receive msg2
+    result = nmea.receive msg3
+    result = nmea.receive msg4
     result.should.eql expected
     done!
 
   it 'should return messages when multiple messages in a chunk', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     expected = ["$HEHDT,289.97,T*12", "$HEHDT,289.97,T*12"]
     given = "$HEHDT,289.97,T*12\r$HEHDT,289.97,T*12\r"
-    result = server.decoder.receive given
+    result = nmea.receive given
     result.should.eql expected
     done!
 
   it 'should flush the buffer if it reaches 16k', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     for _ from 0 to 16000
-      m = server.decoder.receive \0
-    result = server.decoder.buffer-size!
+      m = nmea.receive \0
+    result = nmea.buffer-size!
     result.should.equal 0
     done!
 
   it 'should handle a null character in chunk', (done) ->
     # outside message
-    server.decoder.flush!
+    nmea.flush!
     expected = ["$HEHDT,289.97,T*12"]
-    result = server.decoder.receive "#expected\rA\0Z"
+    result = nmea.receive "#expected\rA\0Z"
     result.should.eql expected
     # inside message
-    server.decoder.flush();
+    nmea.flush();
     expected_ = ["$HEHDT,289.97,\0T*12"]
-    result_ = server.decoder.receive "#expected_\r"
+    result_ = nmea.receive "#expected_\r"
     result_.should.eql expected_
     done!
 
   it 'should handle a null chunk', (done) ->
-    server.decoder.flush!
+    nmea.flush!
     expected = null
-    result = server.decoder.receive expected
+    result = nmea.receive expected
     (result == expected).should.equal.true
     done!
 
@@ -81,7 +78,7 @@ describe 'the nmea.decode', (_) ->
       heading      : 289.97
       heading-type : "T"
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -93,7 +90,7 @@ describe 'the nmea.decode', (_) ->
       heading      : 302.80
       heading-type : "M"
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -112,7 +109,7 @@ describe 'the nmea.decode', (_) ->
         code: "D"
         desc: "Differential"
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -129,7 +126,7 @@ describe 'the nmea.decode', (_) ->
       correction-age    : 20
       reference-station : 1000
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -149,7 +146,7 @@ describe 'the nmea.decode', (_) ->
         elh        : 0.05
       orientation         : 20.43
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -164,7 +161,7 @@ describe 'the nmea.decode', (_) ->
         hours: 0
         minutes: 0
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
@@ -194,13 +191,13 @@ describe 'the nmea.decode', (_) ->
           azimuth   : 114
           snr       : 41
     }
-    result = server.decoder.decode given
+    result = nmea.decode given
     result.should.eql expected
     done!
 
   it 'should return null if checksum is invalid', (done) ->
     given = "$HEHDT,289.97,T*13"
     expected = null
-    result = server.decoder.decode given
+    result = nmea.decode given
     (result == null).should.be.true
     done!
