@@ -21,34 +21,17 @@ disconnect = (c) ->
 
 nmea = @set-decoder "nmea"
 
-prt.list (err, ports) ->
-  ports.for-each (port) ->
-    console.log port.com-name
-    console.log port.pnp-id
-    console.log port.manufacturer
-
-ser = new prt.SerialPort "/dev/ttyUSB0", { baudrate : 9600 }, true
-ser.on \open ->
-  ser.on \data, (chunk) ->
-    for msg in nmea.receive chunk
-      obj = piston-time: mmt.utc!, raw: msg
-      obj <<< nmea.decode msg
-      json = JSON.stringify obj
-      for c in clients
-        c.send json
-
-# ser.on \data (chunk) ->
-# ser = new udp.create-socket \udp4
-# ser.on \message !(chunk) ->
-#   for msg in nmea.receive chunk
-#     obj = piston-time: mmt.utc!, raw: msg
-#     obj <<< nmea.decode msg
-#     json = JSON.stringify obj
-#     for c in clients
-#       c.send json
-
-# ser.on \error (msg) -> console.log "error: #msg"
-#ser.bind 40001
+prt.list (err, [port]) ->
+  console.log "Reading from #{port.com-name}"
+  ser = new prt.SerialPort port.com-name, { baudrate : 9600 }, true
+  ser.on \open ->
+    ser.on \data, (chunk) ->
+      for msg in nmea.receive chunk
+        obj = piston-time: mmt.utc!, raw: msg
+        obj <<< nmea.decode msg
+        json = JSON.stringify obj
+        for c in clients
+          c.send json
 
 wss.on \connection (ws) ->
   clients.push ws
