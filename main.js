@@ -11,7 +11,7 @@
   wss = new srv({
     port: 8000
   });
-  fig("Starfix:PiSTON", {
+  fig("PiSTON", {
     font: 'Delta Corps Priest 1'
   }, function(_, data){
     return console.log(data);
