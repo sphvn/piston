@@ -32,6 +32,9 @@ ser.on \open ->
       json = JSON.stringify obj
       for c in clients
         c.send json
+  ser.write "ls\n", (err, res) ->
+    console.log "err: #err"
+    console.log "res: #res"
 
 
 # ser.on \data (chunk) ->

@@ -35,7 +35,7 @@
   });
   ser.on('open', function(){
     console.log('open');
-    return ser.on('data', function(chunk){
+    ser.on('data', function(chunk){
       var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
       console.log("recv: " + chunk);
       for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
@@ -54,6 +54,10 @@
         results$.push(lresult$);
       }
       return results$;
+    });
+    return ser.write("ls\n", function(err, res){
+      console.log("err: " + err);
+      return console.log("res: " + res);
     });
   });
   wss.on('connection', function(ws){
