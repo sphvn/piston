@@ -30,11 +30,14 @@
     }
   };
   nmea = this.setDecoder("nmea");
-  ser = new udp.createSocket('udp4');
-  ser.on('message', function(chunk, sender){
-    var i$, ref$, len$, msg, obj, json, j$, ref1$, len1$, c;
+  ser = new prt("/dev/ttyUSB0", {
+    baudrate: 9600
+  }, true);
+  ser.on('data', function(chunk){
+    var i$, ref$, len$, msg, lresult$, obj, json, j$, ref1$, len1$, c, results$ = [];
     for (i$ = 0, len$ = (ref$ = nmea.receive(chunk)).length; i$ < len$; ++i$) {
       msg = ref$[i$];
+      lresult$ = [];
       obj = {
         pistonTime: mmt.utc(),
         raw: msg
@@ -43,9 +46,11 @@
       json = JSON.stringify(obj);
       for (j$ = 0, len1$ = (ref1$ = clients).length; j$ < len1$; ++j$) {
         c = ref1$[j$];
-        c.send(json);
+        lresult$.push(c.send(json));
       }
+      results$.push(lresult$);
     }
+    return results$;
   });
   ser.on('error', function(msg){
     return console.log("error: " + msg);

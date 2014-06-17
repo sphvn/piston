@@ -24,10 +24,10 @@ nmea = @set-decoder "nmea"
 #    sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
 #                                      , azimuth   : (parse-int s.2), noise: (parse-int s.3) }] for s in ss }
 
-#ser = new prt "/dev/tty.usbmodem1d11", { baudrate : 9600 }, false
-#ser.on \data (chunk) ->
-ser = new udp.create-socket \udp4
-ser.on \message !(chunk, sender) ->
+ser = new prt "/dev/ttyUSB0", { baudrate : 9600 }, true
+ser.on \data (chunk) ->
+# ser = new udp.create-socket \udp4
+# ser.on \message !(chunk) ->
   for msg in nmea.receive chunk
     obj = piston-time: mmt.utc!, raw: msg
     obj <<< nmea.decode msg
