@@ -29,18 +29,13 @@ prt.list (err, ports) ->
 
 ser = new prt.SerialPort "/dev/ttyUSB0", { baudrate : 9600 }, true
 ser.on \open ->
-  console.log \open
   ser.on \data, (chunk) ->
-    console.log "recv: #chunk"
     for msg in nmea.receive chunk
       obj = piston-time: mmt.utc!, raw: msg
       obj <<< nmea.decode msg
       json = JSON.stringify obj
       for c in clients
         c.send json
-  ser.write "ls\n", (err, res) ->
-    console.log "err: #err"
-    console.log "res: #res"
 
 # ser.on \data (chunk) ->
 # ser = new udp.create-socket \udp4
