@@ -10,7 +10,7 @@
 * Clone the repository to local machine
 * Install NodeJS `http://nodejs.org/`
 * Run `npm install LiveScript -g`
-* Install required npm dependencies, see `package.json` in the directory
+* Run `npm install` to install required npm dependencies, see `package.json` for details
 * Run `livescript -wc .` in the directory to watch / compile
 * Run `npm test` to run unit tests in the /tests directory
 * Run `node main.js` to run the application
