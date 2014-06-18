@@ -1,8 +1,8 @@
 ntp = require "./ntp.js"
 mmt = require \moment
 con = require \connect
+dgr = require \dgram
 prt = require \serialport
-udp = require \dgram
 fig = require \figlet
 srv = require \ws .Server
 wss = new srv { port: 8000 }
@@ -21,17 +21,30 @@ disconnect = (c) ->
 
 nmea = @set-decoder "nmea"
 
-prt.list (err, [port]) ->
-  console.log "Reading from #{port.com-name}"
-  ser = new prt.SerialPort port.com-name, { baudrate : 9600 }, true
-  ser.on \open ->
-    ser.on \data, (chunk) ->
-      for msg in nmea.receive chunk
-        obj = piston-time: mmt.utc!, raw: msg
-        obj <<< nmea.decode msg
-        json = JSON.stringify obj
-        for c in clients
-          c.send json
+receive-chunk = (chunk) ->
+  for msg in nmea.receive chunk
+    obj = piston-time: mmt.utc!, raw: msg
+    obj <<< nmea.decode msg
+    json = JSON.stringify obj
+    for c in clients
+      c.send json
+
+start-serial = ->
+  prt.list (err, [port]) ->
+    console.log "Reading from #{port.com-name}"
+    ser = new prt.SerialPort port.com-name, { baudrate : 9600 }, true
+    ser.on \open -> ser.on \data, receive-chunk
+
+start-udp = ->
+  udp = new dgr.create-socket \udp4
+  udp.on \message, receive-chunk
+  udp.on \error (msg) -> console.log "error: #msg"
+  udp.bind 40001
+
+switch process.argv.2
+  | \serial => start-serial!
+  | \udp => start-udp!
+  | otherwise => start-serial!
 
 wss.on \connection (ws) ->
   clients.push ws
