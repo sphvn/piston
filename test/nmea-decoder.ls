@@ -43,8 +43,8 @@ describe 'the nmea.receive', (_) ->
 
   it 'should flush the buffer if it reaches 16k', (done) ->
     nmea.flush!
-    for _ from 0 to 16000
-      m = nmea.receive \0
+    for _ from 0 to 1600
+      m = nmea.receive \0000000000
     result = nmea.buffer-size!
     result.should.equal 0
     done!

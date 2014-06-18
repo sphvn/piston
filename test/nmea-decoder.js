@@ -50,9 +50,9 @@
     it('should flush the buffer if it reaches 16k', function(done){
       var i$, _, m, result;
       nmea.flush();
-      for (i$ = 0; i$ <= 16000; ++i$) {
+      for (i$ = 0; i$ <= 1600; ++i$) {
         _ = i$;
-        m = nmea.receive('0');
+        m = nmea.receive('0000000000');
       }
       result = nmea.bufferSize();
       result.should.equal(0);
