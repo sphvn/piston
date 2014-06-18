@@ -47,24 +47,22 @@ unpack = (buf, chunk) ->
     
 
 decoders =
-  HDT: (heading, type) ->
-    heading: parse-float heading
-    heading-type: type
+  DBS: (depth-feet, fe, depth-metres, m, depth-fathoms, fa) ->
+    depth:
+      feet: parse-float depth-feet
+      metres: parse-float depth-metres
+      fathoms: parse-float depth-fathoms
 
-  HDM: (heading, type) ->
-    heading: parse-float heading
-    heading-type: type
+  DBT: (depth-feet, fe, depth-metres, m, depth-fathoms, fa) ->
+    depth:
+      feet: parse-float depth-feet
+      metres: parse-float depth-metres
+      fathoms: parse-float depth-fathoms
 
-  VTG: (cog-t, t, cog-m, m, sog-kn, n, sog-kph, k, mode) ->
-    cog:
-      true: parse-float cog-t
-      magnetic: parse-float cog-m
-    sog:
-      knots: parse-float sog-kn
-      kph: parse-float sog-kph
-    mode:
-      code: mode
-      desc: vtg-mode mode
+  DPT: (rel-depth, offset, range-scale) ->
+    rel-depth: parse-float rel-depth
+    offset: parse-float offset
+    #range-scale: parse-float range-scale
 
   GGA: (time, lat, lath, lon, lonh, quality, sats, hdop, alt, alt-u, gsep, gsep-u, age, refid) ->
     q = parse-int quality
@@ -92,13 +90,6 @@ decoders =
       elh: parse-float elh-sd
     orientation: parse-float ori
 
-  ZDA: (time, day, month, year, tz-h, tz-m) ->
-    timedate = "#year-#month-#day #time"
-    time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
-    timezone:
-      hours: parse-int tz-h
-      minutes: parse-int tz-m
-
   GSV: (n, i, t, ...sats) ->
     ss = multi-split 4, sats
     total-parts : parse-int n
@@ -107,6 +98,49 @@ decoders =
     sats        : {[ (parse-int s.0), { elevation : (parse-int s.1)
                                       , azimuth   : (parse-int s.2)
                                       , snr       : (parse-int s.3) }] for s in ss }
+
+  HDG: (heading, deviation, dev-hem, variation, var-hem) ->
+    _dev = parse-float deviation
+    _dev if /^[w]$/i.test dev-hem
+         then -dev
+         else  dev
+    _var = parse-float variation
+    _var if /^[w]$/i.test var-hem
+         then -_var
+         else  _var
+    heading: parse-float heading
+    magnetic-dev: _dev
+    magnetic-var: _var
+
+  HDM: (heading, type) ->
+    heading: parse-float heading
+    heading-type: type
+
+  HDT: (heading, type) ->
+    heading: parse-float heading
+    heading-type: type
+
+  MTW: (temperature, unit) ->
+    temperature: parse-float temperature
+    unit: unit
+
+  VTG: (cog-t, t, cog-m, m, sog-kn, n, sog-kph, k, mode) ->
+    cog:
+      true: parse-float cog-t
+      magnetic: parse-float cog-m
+    sog:
+      knots: parse-float sog-kn
+      kph: parse-float sog-kph
+    mode:
+      code: mode
+      desc: vtg-mode mode
+
+  ZDA: (time, day, month, year, tz-h, tz-m) ->
+    timedate = "#year-#month-#day #time"
+    time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
+    timezone:
+      hours: parse-int tz-h
+      minutes: parse-int tz-m
 
 
 multi-split = (n, xs) ->

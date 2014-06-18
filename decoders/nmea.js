@@ -74,32 +74,28 @@
     }, decode != null ? decode.apply(this, parts) : void 8);
   };
   decoders = {
-    HDT: function(heading, type){
+    DBS: function(depthFeet, fe, depthMetres, m, depthFathoms, fa){
       return {
-        heading: parseFloat(heading),
-        headingType: type
-      };
-    },
-    HDM: function(heading, type){
-      return {
-        heading: parseFloat(heading),
-        headingType: type
-      };
-    },
-    VTG: function(cogT, t, cogM, m, sogKn, n, sogKph, k, mode){
-      return {
-        cog: {
-          'true': parseFloat(cogT),
-          magnetic: parseFloat(cogM)
-        },
-        sog: {
-          knots: parseFloat(sogKn),
-          kph: parseFloat(sogKph)
-        },
-        mode: {
-          code: mode,
-          desc: vtgMode(mode)
+        depth: {
+          feet: parseFloat(depthFeet),
+          metres: parseFloat(depthMetres),
+          fathoms: parseFloat(depthFathoms)
         }
+      };
+    },
+    DBT: function(depthFeet, fe, depthMetres, m, depthFathoms, fa){
+      return {
+        depth: {
+          feet: parseFloat(depthFeet),
+          metres: parseFloat(depthMetres),
+          fathoms: parseFloat(depthFathoms)
+        }
+      };
+    },
+    DPT: function(relDepth, offset, rangeScale){
+      return {
+        relDepth: parseFloat(relDepth),
+        offset: parseFloat(offset)
       };
     },
     GGA: function(time, lat, lath, lon, lonh, quality, sats, hdop, alt, altU, gsep, gsepU, age, refid){
@@ -136,17 +132,6 @@
         orientation: parseFloat(ori)
       };
     },
-    ZDA: function(time, day, month, year, tzH, tzM){
-      var timedate;
-      timedate = year + "-" + month + "-" + day + " " + time;
-      return {
-        time: moment.utc(timedate, "yyyy-MM-DD HHmmss.SS"),
-        timezone: {
-          hours: parseInt(tzH),
-          minutes: parseInt(tzM)
-        }
-      };
-    },
     GSV: function(n, i, t){
       var sats, ss, s;
       sats = slice$.call(arguments, 3);
@@ -167,6 +152,63 @@
           }
           return results$;
         }())
+      };
+    },
+    HDG: function(heading, deviation, devHem, variation, varHem){
+      var _dev, _var;
+      _dev = parseFloat(deviation);
+      _dev(/^[w]$/i.test(devHem) ? -dev : dev);
+      _var = parseFloat(variation);
+      _var(/^[w]$/i.test(varHem) ? -_var : _var);
+      return {
+        heading: parseFloat(heading),
+        magneticDev: _dev,
+        magneticVar: _var
+      };
+    },
+    HDM: function(heading, type){
+      return {
+        heading: parseFloat(heading),
+        headingType: type
+      };
+    },
+    HDT: function(heading, type){
+      return {
+        heading: parseFloat(heading),
+        headingType: type
+      };
+    },
+    MTW: function(temperature, unit){
+      return {
+        temperature: parseFloat(temperature),
+        unit: unit
+      };
+    },
+    VTG: function(cogT, t, cogM, m, sogKn, n, sogKph, k, mode){
+      return {
+        cog: {
+          'true': parseFloat(cogT),
+          magnetic: parseFloat(cogM)
+        },
+        sog: {
+          knots: parseFloat(sogKn),
+          kph: parseFloat(sogKph)
+        },
+        mode: {
+          code: mode,
+          desc: vtgMode(mode)
+        }
+      };
+    },
+    ZDA: function(time, day, month, year, tzH, tzM){
+      var timedate;
+      timedate = year + "-" + month + "-" + day + " " + time;
+      return {
+        time: moment.utc(timedate, "yyyy-MM-DD HHmmss.SS"),
+        timezone: {
+          hours: parseInt(tzH),
+          minutes: parseInt(tzM)
+        }
       };
     }
   };

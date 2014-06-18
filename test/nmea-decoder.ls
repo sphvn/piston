@@ -70,44 +70,42 @@ describe 'the nmea.receive', (_) ->
     done!
 
 describe 'the nmea.decode', (_) ->
-  it 'should return the decoded HDT', (done) ->
-    given = "$HEHDT,289.97,T*12"
+  it 'should return the decoded DBS', (done) ->
+    given = "$SDDBS,2.82,f,0.86,M,0.47,F*34"
     expected = {
-      talker       : "HE"
-      sentence     : "HDT"
-      heading      : 289.97
-      heading-type : "T"
+      talker      : "SD"
+      sentence    : "DBS"
+      depth:
+        feet    : 2.82
+        metres  : 0.86
+        fathoms : 0.47
     }
     result = nmea.decode given
     result.should.eql expected
     done!
 
-  it 'should return the decoded HDM', (done) ->
-    given = "$HCHDM,302.80,M*10"
+  it 'should return the decoded DBT', (done) ->
+    given = "$SDDBT,1330.5,f,0405.5,M,0221.6,F*31"
     expected = {
-      talker       : "HC"
-      sentence     : "HDM"
-      heading      : 302.80
-      heading-type : "M"
+      talker      : "SD"
+      sentence    : "DBT"
+      depth:
+        feet    : 1330.5
+        metres  : 405.5
+        fathoms : 221.6
     }
     result = nmea.decode given
     result.should.eql expected
     done!
 
-  it 'should return the decoded VTG', (done) ->
-    given = "$GPVTG,113.95,T,113.95,M,00.01,N,00.01,K,D*26"
+  it 'should return the decoded DPT', (done) ->
+    given = "$SDDPT,2.82,5.00*5A" # NMEA spec says it has a further field being the "Maximum range scale in use"
     expected = {
-      talker   : "GP"
-      sentence : "VTG"
-      cog:
-        true: 113.95
-        magnetic: 113.95
-      sog:
-        knots: 0.01
-        kph: 0.01
-      mode:
-        code: "D"
-        desc: "Differential"
+      talker      : "SD"
+      sentence    : "DPT"
+      rel-depth   : 2.82
+      offset      : 5.00
+      #range-scale : null
     }
     result = nmea.decode given
     result.should.eql expected
@@ -130,7 +128,6 @@ describe 'the nmea.decode', (_) ->
     result.should.eql expected
     done!
 
-
   it 'should return the decoded GST', (done) ->
     given = "$GPGST,060619.00,0.07,0.04,0.03,020.43,0.03,0.04,0.05*68"
     expected = {
@@ -145,21 +142,6 @@ describe 'the nmea.decode', (_) ->
         lon        : 0.04
         elh        : 0.05
       orientation         : 20.43
-    }
-    result = nmea.decode given
-    result.should.eql expected
-    done!
-
-  it 'should return the decoded ZDA', (done) ->
-    given = "$GPZDA,060619.00,17,06,2014,00,00*69"
-    timedate = "2014-06-17 060619.00"
-    expected = {
-      talker      : "GP"
-      sentence    : "ZDA"
-      time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
-      timezone:
-        hours: 0
-        minutes: 0
     }
     result = nmea.decode given
     result.should.eql expected
@@ -190,6 +172,76 @@ describe 'the nmea.decode', (_) ->
           elevation : 14
           azimuth   : 114
           snr       : 41
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded HDM', (done) ->
+    given = "$HCHDM,302.80,M*10"
+    expected = {
+      talker       : "HC"
+      sentence     : "HDM"
+      heading      : 302.80
+      heading-type : "M"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded HDT', (done) ->
+    given = "$HEHDT,289.97,T*12"
+    expected = {
+      talker       : "HE"
+      sentence     : "HDT"
+      heading      : 289.97
+      heading-type : "T"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded MTW', (done) ->
+    given = "$SDMTW,26.8,C*08"
+    expected = {
+      talker       : "SD"
+      sentence     : "MTW"
+      temperature  : 26.8
+      unit         : "C"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded VTG', (done) ->
+    given = "$GPVTG,113.95,T,113.95,M,00.01,N,00.01,K,D*26"
+    expected = {
+      talker   : "GP"
+      sentence : "VTG"
+      cog:
+        true: 113.95
+        magnetic: 113.95
+      sog:
+        knots: 0.01
+        kph: 0.01
+      mode:
+        code: "D"
+        desc: "Differential"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded ZDA', (done) ->
+    given = "$GPZDA,060619.00,17,06,2014,00,00*69"
+    timedate = "2014-06-17 060619.00"
+    expected = {
+      talker      : "GP"
+      sentence    : "ZDA"
+      time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
+      timezone:
+        hours: 0
+        minutes: 0
     }
     result = nmea.decode given
     result.should.eql expected

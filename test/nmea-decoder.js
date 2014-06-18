@@ -80,50 +80,46 @@
     });
   });
   describe('the nmea.decode', function(_){
-    it('should return the decoded HDT', function(done){
+    it('should return the decoded DBS', function(done){
       var given, expected, result;
-      given = "$HEHDT,289.97,T*12";
+      given = "$SDDBS,2.82,f,0.86,M,0.47,F*34";
       expected = {
-        talker: "HE",
-        sentence: "HDT",
-        heading: 289.97,
-        headingType: "T"
-      };
-      result = nmea.decode(given);
-      result.should.eql(expected);
-      return done();
-    });
-    it('should return the decoded HDM', function(done){
-      var given, expected, result;
-      given = "$HCHDM,302.80,M*10";
-      expected = {
-        talker: "HC",
-        sentence: "HDM",
-        heading: 302.80,
-        headingType: "M"
-      };
-      result = nmea.decode(given);
-      result.should.eql(expected);
-      return done();
-    });
-    it('should return the decoded VTG', function(done){
-      var given, expected, result;
-      given = "$GPVTG,113.95,T,113.95,M,00.01,N,00.01,K,D*26";
-      expected = {
-        talker: "GP",
-        sentence: "VTG",
-        cog: {
-          'true': 113.95,
-          magnetic: 113.95
-        },
-        sog: {
-          knots: 0.01,
-          kph: 0.01
-        },
-        mode: {
-          code: "D",
-          desc: "Differential"
+        talker: "SD",
+        sentence: "DBS",
+        depth: {
+          feet: 2.82,
+          metres: 0.86,
+          fathoms: 0.47
         }
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded DBT', function(done){
+      var given, expected, result;
+      given = "$SDDBT,1330.5,f,0405.5,M,0221.6,F*31";
+      expected = {
+        talker: "SD",
+        sentence: "DBT",
+        depth: {
+          feet: 1330.5,
+          metres: 405.5,
+          fathoms: 221.6
+        }
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded DPT', function(done){
+      var given, expected, result;
+      given = "$SDDPT,2.82,5.00*5A";
+      expected = {
+        talker: "SD",
+        sentence: "DPT",
+        relDepth: 2.82,
+        offset: 5.00
       };
       result = nmea.decode(given);
       result.should.eql(expected);
@@ -175,23 +171,6 @@
       result.should.eql(expected);
       return done();
     });
-    it('should return the decoded ZDA', function(done){
-      var given, timedate, expected, result;
-      given = "$GPZDA,060619.00,17,06,2014,00,00*69";
-      timedate = "2014-06-17 060619.00";
-      expected = {
-        talker: "GP",
-        sentence: "ZDA",
-        time: moment.utc(timedate, "yyyy-MM-DD HHmmss.SS"),
-        timezone: {
-          hours: 0,
-          minutes: 0
-        }
-      };
-      result = nmea.decode(given);
-      result.should.eql(expected);
-      return done();
-    });
     it('should return the decoded GSV', function(done){
       var given, expected, result;
       given = "$GLGSV,2,1,08,65,28,268,49,71,22,138,44,72,53,198,51,73,14,114,41*6D";
@@ -222,6 +201,85 @@
             azimuth: 114,
             snr: 41
           }
+        }
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded HDM', function(done){
+      var given, expected, result;
+      given = "$HCHDM,302.80,M*10";
+      expected = {
+        talker: "HC",
+        sentence: "HDM",
+        heading: 302.80,
+        headingType: "M"
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded HDT', function(done){
+      var given, expected, result;
+      given = "$HEHDT,289.97,T*12";
+      expected = {
+        talker: "HE",
+        sentence: "HDT",
+        heading: 289.97,
+        headingType: "T"
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded MTW', function(done){
+      var given, expected, result;
+      given = "$SDMTW,26.8,C*08";
+      expected = {
+        talker: "SD",
+        sentence: "MTW",
+        temperature: 26.8,
+        unit: "C"
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded VTG', function(done){
+      var given, expected, result;
+      given = "$GPVTG,113.95,T,113.95,M,00.01,N,00.01,K,D*26";
+      expected = {
+        talker: "GP",
+        sentence: "VTG",
+        cog: {
+          'true': 113.95,
+          magnetic: 113.95
+        },
+        sog: {
+          knots: 0.01,
+          kph: 0.01
+        },
+        mode: {
+          code: "D",
+          desc: "Differential"
+        }
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
+    it('should return the decoded ZDA', function(done){
+      var given, timedate, expected, result;
+      given = "$GPZDA,060619.00,17,06,2014,00,00*69";
+      timedate = "2014-06-17 060619.00";
+      expected = {
+        talker: "GP",
+        sentence: "ZDA",
+        time: moment.utc(timedate, "yyyy-MM-DD HHmmss.SS"),
+        timezone: {
+          hours: 0,
+          minutes: 0
         }
       };
       result = nmea.decode(given);
