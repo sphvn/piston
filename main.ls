@@ -19,12 +19,12 @@ disconnect = (c) ->
   i = clients.index-of c
   clients.splice(i, 1) if i != -1
 
-nmea = @set-decoder "nmea"
+codec = @set-decoder "nmea"
 
 receive-chunk = (chunk) ->
-  for msg in nmea.receive chunk
+  for msg in codec.receive chunk
     obj = piston-time: mmt.utc!, raw: msg
-    obj <<< nmea.decode msg
+    obj <<< codec.decode msg
     json = JSON.stringify obj
     for c in clients
       c.send json
@@ -32,7 +32,7 @@ receive-chunk = (chunk) ->
 start-serial = ->
   prt.list (err, [port]) ->
     console.log "Reading from #{port.com-name}"
-    ser = new prt.SerialPort port.com-name, { baudrate : 9600 }, true
+    ser = new prt.SerialPort port.com-name, { baudrate : 19200 }, true
     ser.on \open -> ser.on \data, receive-chunk
 
 start-udp = ->

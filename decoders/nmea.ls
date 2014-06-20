@@ -47,6 +47,21 @@ unpack = (buf, chunk) ->
     
 
 decoders =
+  APB: (status1, status2, xte, xte-dir, xte-unit, arrive-circ, arrive-perp, origin-brg, origin-brg-h, wpt-id, present-brg, present-brg-h, steer-heading, steer-heading-h, mode) ->
+    status: status1
+    xte: 
+      magnitude: parse-float xte
+      dir-to-steer: xte-dir
+      units: xte-unit
+    arrival-circle-entered: arrive-circ
+    perp-passed-wpt: arrive-perp
+    bearing:
+      origin-to-destination: parse-float origin-brg
+      present-to-destination: parse-float present-brg
+    dest-wpt-id: wpt-id
+    heading-to-steer: parse-float heading-to-steer
+    mode: mode
+
   DBS: (depth-feet, fe, depth-metres, m, depth-fathoms, fa) ->
     depth:
       feet: parse-float depth-feet
@@ -78,6 +93,18 @@ decoders =
     hdop: parse-float hdop
     correction-age: parse-int age
     reference-station: parse-int refid
+
+  GSA: (m1, m2, ...sats) ->
+    mode        : gsa-mode m1
+    calc        : parse-int m2
+    calc-desc   : gsa-calc parse-int m2
+    pdop        : parse-float sats[12]
+    hdop        : parse-float sats[13]
+    vdop        : parse-float sats[14]
+    sats        : (
+                    for i from 0 to sats.length - 4
+                      sats[i] unless sats[i] == ''
+                    )
 
   GST: (time, rms, smaj-sd, smin-sd, ori, lat-sd, lon-sd, elh-sd) ->
     time: moment.utc time, "HHmmss.SS"
@@ -135,6 +162,12 @@ decoders =
       code: mode
       desc: vtg-mode mode
 
+  XDR: (...data) ->
+    ss = multi-split 4, data
+    data : {[ s.3, { type  : (xdr-type s.0)
+                     , value : (parse-float(s.1) || 0.0)
+                     , unit  : ((xdr-unit s.0, s.2))}] for s in ss }
+
   ZDA: (time, day, month, year, tz-h, tz-m) ->
     timedate = "#year-#month-#day #time"
     time: moment.utc timedate, "yyyy-MM-DD HHmmss.SS"
@@ -151,15 +184,6 @@ multi-split = (n, xs) ->
         go (acc ++ [ys]), zs
   go [], xs
 
-vtg-mode = (m) -> switch m
-  | \A => "Autonomous"
-  | \D => "Differential"
-  | \E => "Dead Reckoning"
-  | \M => "Manual Input"
-  | \S => "Simulator"
-  | \N => "Not Valid"
-  | otherwise => "Unknown"
-
 gnss-mode = (m) -> switch m
   | 0 => "Not Valid"
   | 1 => "Standalone"
@@ -171,6 +195,66 @@ gnss-mode = (m) -> switch m
   | 7 => "Manual Input"
   | 8 => "Simulator"
   | 9 => "Kinematic Float GPS/Glonass"
+  | otherwise => "Unknown"
+
+gsa-mode = (m) -> switch m
+  | \A => "Automatic"
+  | \M => "Manual"
+  | otherwise => "Unknown"
+
+gsa-calc = (m) -> switch m
+  | 1 => "Fix not available"
+  | 2 => "2D"
+  | 3 => "3D"
+  | otherwise => "Unknown"
+
+vtg-mode = (m) -> switch m
+  | \A => "Autonomous"
+  | \D => "Differential"
+  | \E => "Dead Reckoning"
+  | \M => "Manual Input"
+  | \S => "Simulator"
+  | \N => "Not Valid"
+  | otherwise => "Unknown"
+
+xdr-type = (t) -> switch t
+  | \C => "Temperature"
+  | \A => "Angular Displacement"
+  | \D => "Linear Displacement"
+  | \F => "Frequency"
+  | \N => "Force"
+  | \P => "Pressure"
+  | \R => "Flow Rate"
+  | \T => "Tachometer"
+  | \H => "Humidity"
+  | \V => "Volume"
+  | \G => "Generic"
+  | \I => "Current"
+  | \U => "Voltage"
+  | \S => "Switch or Valve"
+  | \L => "Salinity"
+  | otherwise => "Unknown"
+
+xdr-unit = (t, u) -> switch u
+  | \C => "Degrees Celsius"
+  | \D => "Degrees"
+  | \M => (switch t
+    | \D => "Metres"
+    | otherwise => "Cubic Metres"
+    )
+  | \H => "Hertz"
+  | \N => "Newton"
+  | \B => "Bars"
+  | \P => (switch t
+    | \P => "Pascal"
+    | otherwise => "Percent"
+    )
+  | \L => "Litres/second"
+  | \R => "RPM"
+  | " " => "None"
+  | \A => "Amperes"
+  | \V => "Volts"
+  | \S => "PPT"
   | otherwise => "Unknown"
 
 

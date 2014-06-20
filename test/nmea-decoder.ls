@@ -56,7 +56,7 @@ describe 'the nmea.receive', (_) ->
     result = nmea.receive "#expected\rA\0Z"
     result.should.eql expected
     # inside message
-    nmea.flush();
+    nmea.flush!
     expected_ = ["$HEHDT,289.97,\0T*12"]
     result_ = nmea.receive "#expected_\r"
     result_.should.eql expected_
@@ -70,6 +70,21 @@ describe 'the nmea.receive', (_) ->
     done!
 
 describe 'the nmea.decode', (_) ->
+  it 'should return the decoded DBS', (done) ->
+    given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M*3C"
+    expected = {
+      talker      : "GP"
+      sentence    : "APB"
+      depth:
+        feet    : 2.82
+        metres  : 0.86
+        fathoms : 0.47
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+
   it 'should return the decoded DBS', (done) ->
     given = "$SDDBS,2.82,f,0.86,M,0.47,F*34"
     expected = {
@@ -123,6 +138,28 @@ describe 'the nmea.decode', (_) ->
       hdop        : 0.9
       correction-age    : 20
       reference-station : 1000
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded GSA', (done) ->
+    given = "$GPGSA,M,3,04,07,30,10,08,,,,,,,,7.2,5.6,4.4*31"
+    expected = {
+      talker    : "GP"
+      sentence  : "GSA"
+      mode      : "Manual"
+      calc      : 3
+      calc-desc : "3D"
+      sats:
+        "04"
+        "07"
+        "30"
+        "10"
+        "08"
+      pdop      : 7.2
+      hdop      : 5.6
+      vdop      : 4.4
     }
     result = nmea.decode given
     result.should.eql expected
@@ -227,6 +264,33 @@ describe 'the nmea.decode', (_) ->
       mode:
         code: "D"
         desc: "Differential"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
+
+  it 'should return the decoded XDR', (done) ->
+    given = "$YXXDR,C,,C,WCHR,C,,C,WCHT,C,,C,HINX,P,1.0187,B,STNP*44"
+    expected = {
+      talker      : "YX"
+      sentence    : "XDR"
+      data:
+        "WCHR":
+          type  : "Temperature"
+          value : 0.0
+          unit  : "Degrees Celsius"
+        "WCHT":
+          type  : "Temperature"
+          value : 0.0
+          unit  : "Degrees Celsius"
+        "HINX":
+          type  : "Temperature"
+          value : 0.0
+          unit  : "Degrees Celsius"
+        "STNP":
+          type  : "Pressure"
+          value : 1.0187
+          unit  : "Bars"
     }
     result = nmea.decode given
     result.should.eql expected

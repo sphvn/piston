@@ -1,4 +1,4 @@
-# Decoder for Kongsberg sounder strings
+# Decoder for Kongsberg EA sounder strings
 # DJC 18-Jun-2014
 
 {drop-while, span} = require 'prelude-ls' .Str
@@ -35,13 +35,16 @@ unpack = (buf, chunk) ->
 
 @decode = (msg) ->
   talker         = ""
-  sentence       = "Simrad ASCII"
+  sentence       = "Simrad EA ASCII"
   parts          = msg.split(",")
 
   { talker, sentence } <<<
-    time        : moment parts[1], "HHmmssSS"
-    channel     : parse-int parts[0].substr(1)
-    depth       : parse-float parts[2]
-    backscatter : parse-float parts[3]
-    transducer  : parse-int parts[4]
-    slope       : parse-int parts[5]
+    time           : moment parts[1], "HHmmssSS"
+    channel        : parse-int parts[0].substr(1)
+    depth          : parse-float parts[2]
+    backscatter    : parse-float parts[3]
+    transducer     : parse-int parts[4]
+    slope          : parse-int parts[5]
+    frequency      : parse-int parts[6]
+    draft          : parse-float parts[7]
+    speed-of-sound : parse-float parts[8]

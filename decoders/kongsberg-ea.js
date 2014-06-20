@@ -52,7 +52,7 @@
   this.decode = function(msg){
     var talker, sentence, parts;
     talker = "";
-    sentence = "Simrad ASCII";
+    sentence = "Simrad EA ASCII";
     parts = msg.split(",");
     return {
       talker: talker,
@@ -62,7 +62,10 @@
       depth: parseFloat(parts[2]),
       backscatter: parseFloat(parts[3]),
       transducer: parseInt(parts[4]),
-      slope: parseInt(parts[5])
+      slope: parseInt(parts[5]),
+      frequency: parseInt(parts[6]),
+      draft: parseFloat(parts[7]),
+      speedOfSound: parseFloat(parts[8])
     };
   };
 }).call(this);
