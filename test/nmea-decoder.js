@@ -80,7 +80,7 @@
     });
   });
   describe('the nmea.decode', function(_){
-    it('should return the decoded DBS', function(done){
+    it('should return the decoded APB', function(done){
       var given, expected, result;
       given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M*3C";
       expected = {
