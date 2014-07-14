@@ -15,6 +15,13 @@
 * Run `npm test` to run unit tests in the /tests directory
 * Run `node main.js` to run the application
 
+### Running NodeJS behind the Fugro proxy... ###
+
+* Set the `HTTP_PROXY` & `HTTPS PROXY` in environment variables or profile `http://username:password@172.23.0.70:80`
+* Set the npm http proxy `npm config set proxy http://username:password@172.23.0.70:80`
+* Set the npm https proxy `npm config set https-proxy http://username:password@172.23.0.70:80`
+* Set the registry to use the http instead of https `npm config set registry http://registry.npmjs.org/`
+
 
 ### Who do I talk to? ###
 
