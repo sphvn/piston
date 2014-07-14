@@ -1,10 +1,11 @@
 {drop-while, take-while, span} = require 'prelude-ls' .Str
 {drop, floor, split-at} = require 'prelude-ls'
+{unpack} = require '../unpacker.js'
 moment = require 'moment'
 
-{puts} = require 'util'
-
 length = (.length)
+to-array = (x) -> Array.prototype.slice.call(x)
+unpack-nmea = (b, c) -> unpack.apply this, (to-array arguments) ++ ['$' '\r']
 exspan = (c, xs) ->
   [x, y] = span (!= c), xs
   [x, drop (length c), y]
@@ -17,21 +18,11 @@ buffer = ""
   @flush! if @buffer-size! >= 16000
   msgs = []
   loop
-    [buf, msg] = unpack buffer, chunk
+    [buf, msg] = buffer `unpack-nmea` chunk
     buffer := buf
     return msgs unless msg?
     msgs.push msg
     chunk := ""
-
-unpack = (buf, chunk) ->
-  _buf = drop-while (!= "$"), buf + chunk
-  return [_buf, null] if (_buf.index-of "\r") == -1
-  
-  [msg, _buf] = span (!= "\r"), _buf
-  switch
-  | msg[0] == "$" => [_buf, msg]
-  | otherwise     => [_buf, null]
-
 
 @decode = (msg) ->
   _msg = drop 1 msg

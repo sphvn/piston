@@ -80,22 +80,6 @@
     });
   });
   describe('the nmea.decode', function(_){
-    it('should return the decoded APB', function(done){
-      var given, expected, result;
-      given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M*3C";
-      expected = {
-        talker: "GP",
-        sentence: "APB",
-        depth: {
-          feet: 2.82,
-          metres: 0.86,
-          fathoms: 0.47
-        }
-      };
-      result = nmea.decode(given);
-      result.should.eql(expected);
-      return done();
-    });
     it('should return the decoded DBS', function(done){
       var given, expected, result;
       given = "$SDDBS,2.82,f,0.86,M,0.47,F*34";
