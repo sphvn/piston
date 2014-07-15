@@ -3,8 +3,8 @@
 moment = require 'moment'
 
 length = (.length)
-to-array = (x) -> Array.prototype.slice.call(x)
-unpack-kongsberg = (b, c) -> unpack.apply this, (to-array arguments) ++ ['D' '\r']
+to-array = (x) -> Array.prototype.slice.call x
+unpack-kongsberg = (b, c) -> unpack.apply @, (to-array arguments) ++ ['D' '\r']
 
 buffer = ""
 @buffer-size = -> length buffer
@@ -23,7 +23,7 @@ buffer = ""
 @decode = (msg) ->
   talker         = ""
   sentence       = "Simrad EA ASCII"
-  parts          = msg.split(",")
+  parts          = msg.split ','
 
   { talker, sentence } <<<
     time           : moment parts[1], "HHmmssSS"

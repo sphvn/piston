@@ -54,7 +54,7 @@
     ref$ = exspan(',', _msg), prefix = ref$[0], _msg = ref$[1];
     talker = prefix.substr(0, 2);
     sentence = prefix.substr(2);
-    parts = _msg.split(",");
+    parts = _msg.split(',');
     decode = decoders[sentence.toUpperCase()];
     return import$({
       talker: talker,

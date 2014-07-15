@@ -4,8 +4,8 @@
 moment = require 'moment'
 
 length = (.length)
-to-array = (x) -> Array.prototype.slice.call(x)
-unpack-nmea = (b, c) -> unpack.apply this, (to-array arguments) ++ ['$' '\r']
+to-array = (x) -> Array.prototype.slice.call x
+unpack-nmea = (b, c) -> unpack.apply @, (to-array arguments) ++ ['$' '\r']
 exspan = (c, xs) ->
   [x, y] = span (!= c), xs
   [x, drop (length c), y]
@@ -29,12 +29,12 @@ buffer = ""
   [_msg, checksum] = exspan '*' _msg
   return null if invalid checksum, _msg
   [prefix, _msg] = exspan ',' _msg
-  talker         = prefix.substr(0, 2)
-  sentence       = prefix.substr(2)
-  parts          = _msg.split(",")
+  talker         = prefix.substr 0, 2
+  sentence       = prefix.substr 2
+  parts          = _msg.split ','
 
   decode = decoders[sentence.to-upper-case!]
-  { talker, sentence } <<< decode?.apply(this, parts)
+  { talker, sentence } <<< decode?.apply @, parts
     
 
 decoders =
@@ -131,27 +131,27 @@ decoders =
     magnetic-var: _var
 
   HDM: (heading, type) ->
-    heading: parse-float heading
-    heading-type: type
+    heading      : parse-float heading
+    heading-type : type
 
   HDT: (heading, type) ->
-    heading: parse-float heading
-    heading-type: type
+    heading      : parse-float heading
+    heading-type : type
 
   MTW: (temperature, unit) ->
-    temperature: parse-float temperature
-    unit: unit
+    temperature : parse-float temperature
+    unit        : unit
 
   VTG: (cog-t, t, cog-m, m, sog-kn, n, sog-kph, k, mode) ->
     cog:
-      true: parse-float cog-t
-      magnetic: parse-float cog-m
+      true     : parse-float cog-t
+      magnetic : parse-float cog-m
     sog:
-      knots: parse-float sog-kn
-      kph: parse-float sog-kph
+      knots : parse-float sog-kn
+      kph   : parse-float sog-kph
     mode:
-      code: mode
-      desc: vtg-mode mode
+      code : mode
+      desc : vtg-mode mode
 
   XDR: (...data) ->
     ss = multi-split 4, data

@@ -40,7 +40,7 @@
     var talker, sentence, parts;
     talker = "";
     sentence = "Simrad EA ASCII";
-    parts = msg.split(",");
+    parts = msg.split(',');
     return {
       talker: talker,
       sentence: sentence,
