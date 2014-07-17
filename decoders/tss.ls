@@ -1,9 +1,8 @@
 {drop-while, span} = require 'prelude-ls' .Str
+{length, to-array} = require '../prelude-ext.js'
 {unpack} = require '../unpacker.js'
 moment = require 'moment'
 
-length = (.length)
-to-array = (x) -> Array.prototype.slice.call x
 unpack-tss = (b, c) -> unpack.apply @, (to-array arguments) ++ [':' '\r']
 
 buffer = ""

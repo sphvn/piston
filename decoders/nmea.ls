@@ -1,14 +1,10 @@
-{drop-while, take-while, span} = require 'prelude-ls' .Str
+{drop-while, take-while} = require 'prelude-ls' .Str
 {drop, floor, split-at} = require 'prelude-ls'
+{length, exspan, to-array} = require '../prelude-ext.js'
 {unpack} = require '../unpacker.js'
 moment = require 'moment'
 
-length = (.length)
-to-array = (x) -> Array.prototype.slice.call x
 unpack-nmea = (b, c) -> unpack.apply @, (to-array arguments) ++ ['$' '\r']
-exspan = (c, xs) ->
-  [x, y] = span (!= c), xs
-  [x, drop (length c), y]
 
 buffer = ""
 @buffer-size = -> length buffer
