@@ -10,7 +10,7 @@
 * Clone the repository to local machine
 * Install NodeJS `http://nodejs.org/`
 * Run `npm install LiveScript -g`
-* Install Python and ensure it is available in the `PATH` this is required for the `npm install serialport`
+* Install Python `https://www.python.org/downloads/` and add to `PATH` this is required for `npm install serialport`
 * Run `npm install` to install required npm dependencies, see `package.json` for details
 * Run `livescript -wc .` in the directory to watch / compile
 * Run `npm test` to run unit tests in the /tests directory
