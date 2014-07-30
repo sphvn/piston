@@ -70,19 +70,28 @@ describe 'the nmea.receive', (_) ->
     done!
 
 describe 'the nmea.decode', (_) ->
-  # it 'should return the decoded APB', (done) ->
-  #   given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M*3C"
-  #   expected = {
-  #     talker      : "GP"
-  #     sentence    : "APB"
-  #     depth:
-  #       feet    : 2.82
-  #       metres  : 0.86
-  #       fathoms : 0.47
-  #   }
-  #   result = nmea.decode given
-  #   result.should.eql expected
-  #   done!
+  it 'should return the decoded APB', (done) ->
+    given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M,A*51"
+    expected = {
+      talker      : "GP"
+      sentence    : "APB"
+      status: "A"
+      xte:
+        dir-to-steer: "R"
+        magnitude: 0.1
+        units: "N"
+      arrival-circle-entered: "V"
+      perp-passed-wpt: "V"
+      bearing:
+        origin-to-destination: 11
+        present-to-destination: 11
+      dest-wpt-id: "DEST"
+      heading-to-steer: 11
+      mode: "A"
+    }
+    result = nmea.decode given
+    result.should.eql expected
+    done!
 
 
   it 'should return the decoded DBS', (done) ->

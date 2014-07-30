@@ -9,17 +9,15 @@ wss = new srv { port: 8000 }
 
 fig "PiSTON", {font: 'Delta Corps Priest 1'}, (_, data) -> console.log data
 
-@decoder = {}
-@set-decoder = (dn) ->
-  @decoder := require "./decoders/#dn.js"
-  return @decoder
+set-decoder = (dn) ->
+  return require "./decoders/#dn.js"
 
 clients = []
 disconnect = (c) ->
   i = clients.index-of c
   clients.splice(i, 1) if i != -1
 
-codec = @set-decoder "nmea"
+codec = set-decoder "nmea"
 
 receive-chunk = (chunk) ->
   for msg in codec.receive chunk

@@ -34,7 +34,8 @@ buffer = ""
     
 
 decoders =
-  APB: (status1, status2, xte, xte-dir, xte-unit, arrive-circ, arrive-perp, origin-brg, origin-brg-h, wpt-id, present-brg, present-brg-h, steer-heading, steer-heading-h, mode) ->
+  APB: (status1, status2, xte, xte-dir, xte-unit, arrive-circ, arrive-perp,
+        origin-brg, origin-brg-h, wpt-id, present-brg, present-brg-h, steer-heading, steer-heading-h, mo) ->
     status: status1
     xte: 
       magnitude: parse-float xte
@@ -46,8 +47,8 @@ decoders =
       origin-to-destination: parse-float origin-brg
       present-to-destination: parse-float present-brg
     dest-wpt-id: wpt-id
-    heading-to-steer: parse-float heading-to-steer
-    mode: mode
+    heading-to-steer: parse-float steer-heading
+    mode: mo
 
   DBS: (depth-feet, fe, depth-metres, m, depth-fathoms, fa) ->
     depth:

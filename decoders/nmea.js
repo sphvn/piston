@@ -50,7 +50,7 @@
     }, decode != null ? decode.apply(this, parts) : void 8);
   };
   decoders = {
-    APB: function(status1, status2, xte, xteDir, xteUnit, arriveCirc, arrivePerp, originBrg, originBrgH, wptId, presentBrg, presentBrgH, steerHeading, steerHeadingH, mode){
+    APB: function(status1, status2, xte, xteDir, xteUnit, arriveCirc, arrivePerp, originBrg, originBrgH, wptId, presentBrg, presentBrgH, steerHeading, steerHeadingH, mo){
       return {
         status: status1,
         xte: {
@@ -65,8 +65,8 @@
           presentToDestination: parseFloat(presentBrg)
         },
         destWptId: wptId,
-        headingToSteer: parseFloat(headingToSteer),
-        mode: mode
+        headingToSteer: parseFloat(steerHeading),
+        mode: mo
       };
     },
     DBS: function(depthFeet, fe, depthMetres, m, depthFathoms, fa){

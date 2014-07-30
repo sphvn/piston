@@ -80,6 +80,32 @@
     });
   });
   describe('the nmea.decode', function(_){
+    it('should return the decoded APB', function(done){
+      var given, expected, result;
+      given = "$GPAPB,A,A,0.10,R,N,V,V,011,M,DEST,011,M,011,M,A*51";
+      expected = {
+        talker: "GP",
+        sentence: "APB",
+        status: "A",
+        xte: {
+          dirToSteer: "R",
+          magnitude: 0.1,
+          units: "N"
+        },
+        arrivalCircleEntered: "V",
+        perpPassedWpt: "V",
+        bearing: {
+          originToDestination: 11,
+          presentToDestination: 11
+        },
+        destWptId: "DEST",
+        headingToSteer: 11,
+        mode: "A"
+      };
+      result = nmea.decode(given);
+      result.should.eql(expected);
+      return done();
+    });
     it('should return the decoded DBS', function(done){
       var given, expected, result;
       given = "$SDDBS,2.82,f,0.86,M,0.47,F*34";
