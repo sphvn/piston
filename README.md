@@ -14,7 +14,7 @@
 * Run `npm install` to install required npm dependencies, see `package.json` for details
 * Run `livescript -wc .` in the directory to watch / compile
 * Run `npm test` to run unit tests in the /tests directory
-* Run `node main.js [serial|udp] [nmea|{decoder-name}]` to run the application
+* Run `node main {port} {decoder} {udp|com} {udp-port}` to run the application
 
 ### Running NodeJS behind the Fugro proxy... ###
 

@@ -6,43 +6,51 @@ prt = require \serialport
 fig = require \figlet
 srv = require \ws .Server
 wss = new srv { port: 8000 }
+args = process.argv
 
 fig "PiSTON", {font: 'Delta Corps Priest 1'}, (_, data) -> console.log data
 
 set-decoder = (dn) ->
-  return require "./decoders/#dn.js"
+  js = "./decoders/#dn.js"
+  console.log js
+  require js
 
 clients = []
 disconnect = (c) ->
   i = clients.index-of c
   clients.splice(i, 1) if i != -1
 
-codec = set-decoder "nmea"
+codec = set-decoder switch args.3
+  | \nmea => \nmea
+  | \tss => \tss
+  | \kongsberg-ea => \kongsberg-ea
+  | otherwise => "nmea"
 
 receive-chunk = (chunk) ->
   for msg in codec.receive chunk
     obj = piston-time: mmt.utc!, raw: msg
     obj <<< codec.decode msg
     json = JSON.stringify obj
-    for c in clients
+    for c in client
       c.send json
 
-start-serial = ->
+start-com = ->
   prt.list (err, [port]) ->
-    console.log "Reading from #{port.com-name}"
+    console.log "com:#{port.com-name}"
     ser = new prt.SerialPort port.com-name, { baudrate : 19200 }, true
     ser.on \open -> ser.on \data, receive-chunk
 
-start-udp = ->
+start-udp = (port) ->
+  console.log "udp:#port"
   udp = new dgr.create-socket \udp4
   udp.on \message, receive-chunk
   udp.on \error (msg) -> console.log "error: #msg"
-  udp.bind 40001
+  udp.bind port
 
-switch process.argv.2
-  | \serial => start-serial!
-  | \udp => start-udp!
-  | otherwise => start-serial!
+switch args.4
+  | \com => start-com!
+  | \udp => start-udp args.5
+  | otherwise => start-com!
 
 wss.on \connection (ws) ->
   clients.push ws
@@ -58,4 +66,4 @@ wss.on \connection (ws) ->
 #     console.log "#server: #{(mmt time).format 'HH:mm:ss.SSS'}  stratum: #stratum"
 
 
-con!use (con.static __dirname) .listen 8080
+con!use (con.static __dirname) .listen args.2 || 8080
