@@ -7,8 +7,11 @@ fig       = require \figlet
 srv       = require \ws .Server
 ws-server = new srv { port: 8000 }
 args      = process.argv
+length    = (.length)
 
 fig "PiSTON", {font: 'Delta Corps Priest 1'}, (_, data) -> console.log data
+
+if (length args) <= 2 then console.log "using defaults"
 
 set-decoder = (dn) ->
   js = "./decoders/#dn.js"
