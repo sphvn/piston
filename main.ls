@@ -1,12 +1,12 @@
-ntp = require "./ntp.js"
-mmt = require \moment
-con = require \connect
-dgr = require \dgram
-prt = require \serialport
-fig = require \figlet
-srv = require \ws .Server
-wss = new srv { port: 8000 }
-args = process.argv
+ntp       = require "./ntp.js"
+mmt       = require \moment
+con       = require \connect
+dgr       = require \dgram
+prt       = require \serialport
+fig       = require \figlet
+srv       = require \ws .Server
+ws-server = new srv { port: 8000 }
+args      = process.argv
 
 fig "PiSTON", {font: 'Delta Corps Priest 1'}, (_, data) -> console.log data
 
@@ -49,21 +49,13 @@ start-udp = (port) ->
 
 switch args.4
   | \com => start-com!
-  | \udp => start-udp args.5
+  | \udp => start-udp args.5 or 40001
   | otherwise => start-com!
 
-wss.on \connection (ws) ->
+ws-server.on \connection (ws) ->
   clients.push ws
   ws.on \message (m) -> console.log m
   ws.on \close -> disconnect ws
   ws.on \error -> disconnect ws
 
-# console.log "localhost      : #{mmt(new Date).format 'HH:mm:ss.SSS'}"
-# ntp.get-network-time "172.23.21.255", 123, (server, stratum, time) ->
-#   while server.length < 15
-#     server += ' '
-#   if stratum > 0
-#     console.log "#server: #{(mmt time).format 'HH:mm:ss.SSS'}  stratum: #stratum"
-
-
-con!use (con.static __dirname) .listen args.2 || 8080
+con!use (con.static __dirname) .listen args.2 or 8080
