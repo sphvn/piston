@@ -34,7 +34,7 @@ receive-chunk = (chunk) ->
     obj = piston-time: mmt.utc!, raw: msg
     obj <<< codec.decode msg
     json = JSON.stringify obj
-    for c in client
+    for c in clients
       c.send json
 
 start-com = ->
